@@ -50,7 +50,7 @@ export default function Header() {
               <div className="flex items-center">
                 <Logo />
                 <span className="ml-2 text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 hidden sm:inline-block dark:from-blue-400 dark:to-indigo-400">
-                  DeFi Platform
+                  DefiHub
                 </span>
               </div>
             </Link>
