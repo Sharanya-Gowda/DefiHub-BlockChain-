@@ -14,7 +14,7 @@ export default function LendingMarket() {
       openModal();
       return;
     }
-    
+
     // In a real DeFi app, this would navigate to the lend form with the asset pre-selected
     toast({
       title: "Asset Selected",
@@ -31,7 +31,7 @@ export default function LendingMarket() {
             <span>Updated 1 min ago</span>
           </div>
         </div>
-        
+
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -63,11 +63,11 @@ export default function LendingMarket() {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-success font-medium">{item.apy}%</div>
+                    <div className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold inline-block">{item.apy}%</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <Button 
-                      className="bg-primary hover:bg-blue-600 text-white px-4 py-1 rounded-lg text-sm transition-colors duration-200"
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-semibold shadow-sm hover:shadow transition-all duration-200"
                       onClick={() => handleLend(item.asset.symbol)}
                     >
                       Lend
