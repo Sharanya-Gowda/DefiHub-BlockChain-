@@ -77,7 +77,7 @@ export const assets: Asset[] = [
     id: "eth",
     name: "Ethereum",
     symbol: "ETH",
-    icon: "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=024",
+    icon: "https://assets.coingecko.com/coins/images/279/large/ethereum.png",
     price: 1825,
     change24h: 2.4
   },
@@ -85,7 +85,7 @@ export const assets: Asset[] = [
     id: "btc",
     name: "Bitcoin",
     symbol: "BTC",
-    icon: "https://cryptologos.cc/logos/bitcoin-btc-logo.png?v=024",
+    icon: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png",
     price: 57000,
     change24h: 1.2
   },
@@ -93,7 +93,7 @@ export const assets: Asset[] = [
     id: "usdc",
     name: "USD Coin",
     symbol: "USDC",
-    icon: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=024",
+    icon: "https://assets.coingecko.com/coins/images/6319/large/usdc.png",
     price: 1,
     change24h: 0.01
   },
@@ -101,7 +101,7 @@ export const assets: Asset[] = [
     id: "link",
     name: "Chainlink",
     symbol: "LINK",
-    icon: "https://cryptologos.cc/logos/chainlink-link-logo.png?v=024",
+    icon: "https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png",
     price: 11.5,
     change24h: -0.8
   },
@@ -109,7 +109,7 @@ export const assets: Asset[] = [
     id: "uni",
     name: "Uniswap",
     symbol: "UNI",
-    icon: "https://cryptologos.cc/logos/uniswap-uni-logo.png?v=024",
+    icon: "https://assets.coingecko.com/coins/images/12504/large/uni.jpg",
     price: 6.5,
     change24h: 3.5
   },
@@ -117,7 +117,7 @@ export const assets: Asset[] = [
     id: "dai",
     name: "Dai",
     symbol: "DAI",
-    icon: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png?v=024",
+    icon: "https://assets.coingecko.com/coins/images/9956/large/Badge_Dai.png",
     price: 1,
     change24h: 0.02
   },
@@ -125,7 +125,7 @@ export const assets: Asset[] = [
     id: "usdt",
     name: "Tether",
     symbol: "USDT",
-    icon: "https://cryptologos.cc/logos/tether-usdt-logo.png?v=024",
+    icon: "https://assets.coingecko.com/coins/images/325/large/Tether.png",
     price: 1,
     change24h: 0.0
   }
