@@ -81,17 +81,42 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setIsConnected(true);
     
     // Generate a random Ethereum address for demo
-    const randomAddr = "0x" + Array.from({length: 40}, () => 
-      Math.floor(Math.random() * 16).toString(16)).join('');
+    let randomAddr = "";
     
+    // Simulate different providers returning different wallets for demo
+    if (provider === "MetaMask") {
+      randomAddr = "0x71C7656EC7ab88b098defB751B7401B5f6d8976F";
+    } else if (provider === "WalletConnect") {
+      randomAddr = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
+    } else if (provider === "Coinbase Wallet") {
+      randomAddr = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
+    } else {
+      // Generate random for other providers
+      randomAddr = "0x" + Array.from({length: 40}, () => 
+        Math.floor(Math.random() * 16).toString(16)).join('');
+    }
+    
+    // Format address for display: 0x1234...5678
     const shortenedAddress = randomAddr.slice(0, 6) + "..." + randomAddr.slice(-4);
     setAddress(shortenedAddress);
     
-    // Mock balance
-    setBalance("1.234");
+    // Mock balance based on provider
+    if (provider === "MetaMask") {
+      setBalance("2.541");
+    } else if (provider === "WalletConnect") {
+      setBalance("0.784");
+    } else if (provider === "Coinbase Wallet") {
+      setBalance("5.328");
+    } else {
+      setBalance("1.234");
+    }
     
-    // Mock chain ID (1 = Ethereum Mainnet)
-    setChainId(1);
+    // Mock chain ID (1 = Ethereum Mainnet, 137 = Polygon, etc.)
+    if (provider === "WalletConnect") {
+      setChainId(137); // Polygon
+    } else {
+      setChainId(1); // Ethereum Mainnet
+    }
     
     closeModal();
   };

@@ -3,11 +3,27 @@ import { Logo } from "@/components/ui/logo";
 import WalletConnectButton from "@/components/wallet-connect-button";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Home, TrendingUp, DollarSign, RefreshCw, Clock } from "lucide-react";
+import { 
+  Menu, 
+  X, 
+  Home, 
+  TrendingUp, 
+  DollarSign, 
+  RefreshCw, 
+  Clock, 
+  Settings,
+  User,
+  Bell,
+  Moon,
+  Sun
+} from "lucide-react";
+import { useSettings } from "@/lib/settingsContext";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function Header() {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { openSettings, theme, setTheme } = useSettings();
 
   const isActive = (path: string) => {
     return location === path;
@@ -20,6 +36,10 @@ export default function Header() {
     { name: "Swap", path: "/swap", icon: <RefreshCw size={18} /> },
     { name: "History", path: "/history", icon: <Clock size={18} /> },
   ];
+
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
+  };
 
   return (
     <header className="bg-gradient-to-r from-blue-50 via-white to-blue-50 border-b border-gray-200 sticky top-0 z-50 shadow-sm">
@@ -56,7 +76,47 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center space-x-3">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-full hover:bg-blue-100"
+                    onClick={toggleTheme}
+                  >
+                    {theme === 'light' ? 
+                      <Moon className="h-5 w-5 text-gray-700" /> : 
+                      <Sun className="h-5 w-5 text-gray-700" />
+                    }
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Toggle {theme === 'light' ? 'Dark' : 'Light'} Mode</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-full hover:bg-blue-100"
+                    onClick={openSettings}
+                  >
+                    <Settings className="h-5 w-5 text-gray-700" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Settings</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
             <WalletConnectButton />
+            
             <Button
               variant="ghost"
               size="icon"
@@ -90,6 +150,17 @@ export default function Header() {
                 {item.name}
               </Link>
             ))}
+            
+            <button 
+              className="w-full flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700"
+              onClick={() => {
+                openSettings();
+                setMobileMenuOpen(false);
+              }}
+            >
+              <Settings className="mr-3" size={18} />
+              Settings
+            </button>
           </div>
         </div>
       )}
