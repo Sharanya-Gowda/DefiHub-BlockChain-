@@ -77,7 +77,7 @@ export default function SettingsModal() {
         </DialogHeader>
         
         <Tabs defaultValue="profile" className="w-full" value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-3 mb-4">
+          <TabsList className="grid grid-cols-4 mb-4">
             <TabsTrigger value="profile" className="flex items-center justify-center">
               <User className="h-4 w-4 mr-2" />
               <span>Profile</span>
@@ -89,6 +89,10 @@ export default function SettingsModal() {
             <TabsTrigger value="notifications" className="flex items-center justify-center">
               <Bell className="h-4 w-4 mr-2" />
               <span>Notifications</span>
+            </TabsTrigger>
+            <TabsTrigger value="security" className="flex items-center justify-center">
+              <ShieldCheck className="h-4 w-4 mr-2" />
+              <span>Security</span>
             </TabsTrigger>
           </TabsList>
           
@@ -246,6 +250,93 @@ export default function SettingsModal() {
                 onClick={handleSaveNotifications}
               >
                 Save Notification Settings
+              </Button>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="security" className="space-y-4">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-medium">Two-Factor Authentication</h4>
+                  <p className="text-sm text-gray-500">Add an extra layer of security to your account</p>
+                </div>
+                <Switch 
+                  checked={false}
+                  onCheckedChange={() => {
+                    toast({
+                      title: "2FA Setup",
+                      description: "Two-factor authentication setup would be initiated here",
+                    });
+                  }}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-medium">Transaction Signing</h4>
+                  <p className="text-sm text-gray-500">Require password for all transactions</p>
+                </div>
+                <Switch 
+                  checked={true}
+                  onCheckedChange={() => {}}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-medium">Hardware Wallet Support</h4>
+                  <p className="text-sm text-gray-500">Enable hardware wallet integration</p>
+                </div>
+                <Switch 
+                  checked={true}
+                  onCheckedChange={() => {}}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-medium">Spending Limits</h4>
+                  <p className="text-sm text-gray-500">Set daily transaction limits</p>
+                </div>
+                <Input 
+                  type="number"
+                  className="w-24"
+                  placeholder="1000"
+                  onChange={() => {
+                    toast({
+                      title: "Limit Updated",
+                      description: "Daily spending limit would be updated here",
+                    });
+                  }}
+                />
+              </div>
+
+              <div className="space-y-2 mt-6">
+                <h4 className="text-sm font-medium">Active Sessions</h4>
+                <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium">Current Browser</p>
+                      <p className="text-xs text-gray-500">Last active: Just now</p>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      Current
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <Button 
+                className="w-full mt-4" 
+                onClick={() => {
+                  toast({
+                    title: "Security Settings",
+                    description: "Security settings would be saved here",
+                  });
+                }}
+              >
+                Save Security Settings
               </Button>
             </div>
           </TabsContent>
