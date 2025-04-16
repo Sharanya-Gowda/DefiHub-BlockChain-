@@ -533,4 +533,468 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+import { db } from "./db";
+import { eq, and, desc, sql, count } from "drizzle-orm";
+
+export class DatabaseStorage implements IStorage {
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async getUserByWalletAddress(address: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.walletAddress, address));
+    return user;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
+  async getAllAssets(): Promise<Asset[]> {
+    return await db.select().from(assets);
+  }
+
+  async getAsset(id: number): Promise<Asset | undefined> {
+    const [asset] = await db.select().from(assets).where(eq(assets.id, id));
+    return asset;
+  }
+
+  async getAssetBySymbol(symbol: string): Promise<Asset | undefined> {
+    const [asset] = await db.select().from(assets).where(eq(assets.symbol, symbol));
+    return asset;
+  }
+
+  async createAsset(insertAsset: InsertAsset): Promise<Asset> {
+    const [asset] = await db.insert(assets).values(insertAsset).returning();
+    return asset;
+  }
+
+  async getAllLendingPools(): Promise<LendingPool[]> {
+    return await db.select().from(lendingPools);
+  }
+
+  async getLendingPool(id: number): Promise<LendingPool | undefined> {
+    const [pool] = await db.select().from(lendingPools).where(eq(lendingPools.id, id));
+    return pool;
+  }
+
+  async createLendingPool(insertPool: InsertLendingPool): Promise<LendingPool> {
+    const [pool] = await db.insert(lendingPools).values(insertPool).returning();
+    return pool;
+  }
+
+  async getAllBorrowingMarkets(): Promise<BorrowingMarket[]> {
+    return await db.select().from(borrowingMarkets);
+  }
+
+  async getBorrowingMarket(id: number): Promise<BorrowingMarket | undefined> {
+    const [market] = await db.select().from(borrowingMarkets).where(eq(borrowingMarkets.id, id));
+    return market;
+  }
+
+  async createBorrowingMarket(insertMarket: InsertBorrowingMarket): Promise<BorrowingMarket> {
+    const [market] = await db.insert(borrowingMarkets).values(insertMarket).returning();
+    return market;
+  }
+
+  async getAllLiquidityPools(): Promise<LiquidityPool[]> {
+    return await db.select().from(liquidityPools);
+  }
+
+  async getLiquidityPool(id: number): Promise<LiquidityPool | undefined> {
+    const [pool] = await db.select().from(liquidityPools).where(eq(liquidityPools.id, id));
+    return pool;
+  }
+
+  async createLiquidityPool(insertPool: InsertLiquidityPool): Promise<LiquidityPool> {
+    const [pool] = await db.insert(liquidityPools).values(insertPool).returning();
+    return pool;
+  }
+
+  async getUserPositions(userId: number): Promise<UserPosition[]> {
+    return await db.select().from(userPositions).where(eq(userPositions.userId, userId));
+  }
+
+  async getUserPosition(id: number): Promise<UserPosition | undefined> {
+    const [position] = await db.select().from(userPositions).where(eq(userPositions.id, id));
+    return position;
+  }
+
+  async createUserPosition(insertPosition: InsertUserPosition): Promise<UserPosition> {
+    const [position] = await db.insert(userPositions).values(insertPosition).returning();
+    return position;
+  }
+
+  async updateUserPosition(id: number, changes: Partial<InsertUserPosition>): Promise<UserPosition> {
+    const [updatedPosition] = await db
+      .update(userPositions)
+      .set({ ...changes, updatedAt: new Date() })
+      .where(eq(userPositions.id, id))
+      .returning();
+    return updatedPosition;
+  }
+
+  async createOrUpdateUserPosition(
+    userId: number, 
+    positionType: string, 
+    assetId: number, 
+    amount: number,
+    collateralAssetId?: number | null,
+    collateralAmount?: number | null
+  ): Promise<UserPosition> {
+    // Try to find an existing position
+    const [existingPosition] = await db
+      .select()
+      .from(userPositions)
+      .where(
+        and(
+          eq(userPositions.userId, userId),
+          eq(userPositions.positionType, positionType),
+          eq(userPositions.assetId, assetId),
+          collateralAssetId 
+            ? eq(userPositions.collateralAssetId, collateralAssetId)
+            : eq(userPositions.collateralAssetId, null)
+        )
+      );
+
+    if (existingPosition) {
+      // Update existing position
+      const newAmount = existingPosition.amount + amount;
+      const newCollateralAmount = collateralAmount && existingPosition.collateralAmount 
+        ? existingPosition.collateralAmount + collateralAmount
+        : collateralAmount || existingPosition.collateralAmount;
+      
+      return this.updateUserPosition(existingPosition.id, { 
+        amount: newAmount,
+        collateralAmount: newCollateralAmount
+      });
+    } else {
+      // Create new position
+      // We need to get the asset details to determine APY
+      let apy = 0;
+      
+      if (positionType === 'lending') {
+        const [lendingPool] = await db
+          .select()
+          .from(lendingPools)
+          .where(eq(lendingPools.assetId, assetId));
+        
+        if (lendingPool) {
+          apy = lendingPool.apy;
+        }
+      } else if (positionType === 'borrowing') {
+        const [borrowingMarket] = await db
+          .select()
+          .from(borrowingMarkets)
+          .where(eq(borrowingMarkets.assetId, assetId));
+        
+        if (borrowingMarket) {
+          apy = borrowingMarket.interestRate;
+        }
+      } else if (positionType === 'liquidity') {
+        // For liquidity positions, we need both assets
+        if (!collateralAssetId) {
+          throw new Error('Second asset ID is required for liquidity positions');
+        }
+        
+        const [liquidityPool] = await db
+          .select()
+          .from(liquidityPools)
+          .where(
+            and(
+              eq(liquidityPools.asset1Id, assetId),
+              eq(liquidityPools.asset2Id, collateralAssetId)
+            )
+          );
+        
+        if (liquidityPool) {
+          apy = liquidityPool.apy;
+        }
+      }
+      
+      return this.createUserPosition({
+        userId,
+        positionType,
+        assetId,
+        amount,
+        collateralAssetId,
+        collateralAmount,
+        secondAssetId: positionType === 'liquidity' ? collateralAssetId : undefined,
+        earned: 0,
+        apy
+      });
+    }
+  }
+
+  async getUserTransactions(userId: number): Promise<Transaction[]> {
+    return await db
+      .select()
+      .from(transactions)
+      .where(eq(transactions.userId, userId))
+      .orderBy(desc(transactions.createdAt));
+  }
+
+  async getTransaction(id: number): Promise<Transaction | undefined> {
+    const [transaction] = await db.select().from(transactions).where(eq(transactions.id, id));
+    return transaction;
+  }
+
+  async createTransaction(insertTransaction: InsertTransaction): Promise<Transaction> {
+    const [transaction] = await db.insert(transactions).values(insertTransaction).returning();
+    return transaction;
+  }
+  
+  async initializeMockData() {
+    // Check if we already have data
+    const assetCount = await db.select({ count: count() }).from(assets);
+    if (assetCount[0].count > 0) {
+      console.log("Database already initialized with mock data");
+      return;
+    }
+    
+    console.log("Initializing database with mock data");
+    
+    // Create mock assets
+    const btc = await this.createAsset({
+      symbol: "BTC",
+      name: "Bitcoin",
+      price: 50000,
+      iconUrl: "https://cryptologos.cc/logos/bitcoin-btc-logo.png",
+      change24h: 1.5
+    });
+    
+    const eth = await this.createAsset({
+      symbol: "ETH",
+      name: "Ethereum",
+      price: 3000,
+      iconUrl: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
+      change24h: 2.1
+    });
+    
+    const usdc = await this.createAsset({
+      symbol: "USDC",
+      name: "USD Coin",
+      price: 1,
+      iconUrl: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png",
+      change24h: 0.1
+    });
+    
+    const dai = await this.createAsset({
+      symbol: "DAI",
+      name: "Dai",
+      price: 1,
+      iconUrl: "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png",
+      change24h: 0.05
+    });
+    
+    const link = await this.createAsset({
+      symbol: "LINK",
+      name: "Chainlink",
+      price: 15,
+      iconUrl: "https://cryptologos.cc/logos/chainlink-link-logo.png",
+      change24h: 3.2
+    });
+    
+    // Create lending pools
+    await this.createLendingPool({
+      assetId: btc.id,
+      marketSizeInTokens: 100,
+      apy: 2.5
+    });
+    
+    await this.createLendingPool({
+      assetId: eth.id,
+      marketSizeInTokens: 2000,
+      apy: 3.2
+    });
+    
+    await this.createLendingPool({
+      assetId: usdc.id,
+      marketSizeInTokens: 1000000,
+      apy: 5.1
+    });
+    
+    await this.createLendingPool({
+      assetId: dai.id,
+      marketSizeInTokens: 800000,
+      apy: 4.8
+    });
+    
+    await this.createLendingPool({
+      assetId: link.id,
+      marketSizeInTokens: 50000,
+      apy: 3.7
+    });
+    
+    // Create borrowing markets
+    await this.createBorrowingMarket({
+      assetId: btc.id,
+      availableInTokens: 80,
+      interestRate: 3.5,
+      collateralRequired: 1.5
+    });
+    
+    await this.createBorrowingMarket({
+      assetId: eth.id,
+      availableInTokens: 1500,
+      interestRate: 4.2,
+      collateralRequired: 1.4
+    });
+    
+    await this.createBorrowingMarket({
+      assetId: usdc.id,
+      availableInTokens: 800000,
+      interestRate: 6.1,
+      collateralRequired: 1.2
+    });
+    
+    await this.createBorrowingMarket({
+      assetId: dai.id,
+      availableInTokens: 600000,
+      interestRate: 5.8,
+      collateralRequired: 1.2
+    });
+    
+    await this.createBorrowingMarket({
+      assetId: link.id,
+      availableInTokens: 40000,
+      interestRate: 4.7,
+      collateralRequired: 1.3
+    });
+    
+    // Create liquidity pools
+    await this.createLiquidityPool({
+      asset1Id: btc.id,
+      asset2Id: usdc.id,
+      liquidityUsd: 10000000,
+      volume24hUsd: 5000000,
+      apy: 10.2,
+      feeTier: 0.3
+    });
+    
+    await this.createLiquidityPool({
+      asset1Id: eth.id,
+      asset2Id: usdc.id,
+      liquidityUsd: 8000000,
+      volume24hUsd: 4000000,
+      apy: 12.5,
+      feeTier: 0.3
+    });
+    
+    await this.createLiquidityPool({
+      asset1Id: eth.id,
+      asset2Id: btc.id,
+      liquidityUsd: 3000000,
+      volume24hUsd: 1000000,
+      apy: 8.4,
+      feeTier: 0.3
+    });
+    
+    await this.createLiquidityPool({
+      asset1Id: link.id,
+      asset2Id: eth.id,
+      liquidityUsd: 1000000,
+      volume24hUsd: 500000,
+      apy: 15.1,
+      feeTier: 0.3
+    });
+    
+    await this.createLiquidityPool({
+      asset1Id: dai.id,
+      asset2Id: usdc.id,
+      liquidityUsd: 5000000,
+      volume24hUsd: 2000000,
+      apy: 4.2,
+      feeTier: 0.05
+    });
+    
+    // Create a test user
+    const testUser = await this.createUser({
+      username: "testuser",
+      password: "password123", // in a real app, this would be hashed
+      walletAddress: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"
+    });
+    
+    // Create some user positions
+    await this.createUserPosition({
+      userId: testUser.id,
+      positionType: "lending",
+      assetId: eth.id,
+      amount: 5,
+      collateralAssetId: null,
+      collateralAmount: null,
+      secondAssetId: null,
+      earned: 0.02,
+      apy: 3.2
+    });
+    
+    await this.createUserPosition({
+      userId: testUser.id,
+      positionType: "borrowing",
+      assetId: usdc.id,
+      amount: 5000,
+      collateralAssetId: eth.id,
+      collateralAmount: 2.5,
+      secondAssetId: null,
+      earned: 0,
+      apy: 6.1
+    });
+    
+    await this.createUserPosition({
+      userId: testUser.id,
+      positionType: "liquidity",
+      assetId: eth.id,
+      amount: 1.5,
+      collateralAssetId: usdc.id,
+      collateralAmount: 4500,
+      secondAssetId: usdc.id,
+      earned: 10,
+      apy: 12.5
+    });
+    
+    // Create some transactions
+    await this.createTransaction({
+      userId: testUser.id,
+      type: "lend",
+      assetId: eth.id,
+      amount: 5,
+      fromAssetId: null,
+      toAssetId: null,
+      status: "completed"
+    });
+    
+    await this.createTransaction({
+      userId: testUser.id,
+      type: "borrow",
+      assetId: usdc.id,
+      amount: 5000,
+      fromAssetId: null,
+      toAssetId: null,
+      status: "completed"
+    });
+    
+    await this.createTransaction({
+      userId: testUser.id,
+      type: "swap",
+      assetId: eth.id,
+      amount: 2,
+      fromAssetId: eth.id,
+      toAssetId: btc.id,
+      status: "completed"
+    });
+    
+    console.log("Mock data initialization complete");
+  }
+}
+
+export const storage = new DatabaseStorage();
+
+// Initialize the database with mock data when the server starts
+storage.initializeMockData().catch(console.error);
