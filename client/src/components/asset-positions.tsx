@@ -49,8 +49,8 @@ export default function AssetPositions({ activeTab }: AssetPositionsProps) {
                   <div className="text-xs text-gray-500 font-mono">${(position.earned * position.asset.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button className="text-primary hover:text-blue-700 mr-3">Withdraw</button>
-                  <button className="text-accent hover:text-purple-700">Borrow</button>
+                  <button className="bg-primary text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors mr-2">Withdraw</button>
+                  <button className="bg-accent text-white px-3 py-1 rounded-lg hover:bg-purple-700 transition-colors">Borrow</button>
                 </td>
               </tr>
             ))}
@@ -106,8 +106,8 @@ export default function AssetPositions({ activeTab }: AssetPositionsProps) {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button className="text-primary hover:text-blue-700 mr-3">Repay</button>
-                  <button className="text-secondary hover:text-green-700">Add Collateral</button>
+                  <button className="bg-primary text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors mr-2">Repay</button>
+                  <button className="bg-secondary text-white px-3 py-1 rounded-lg hover:bg-green-700 transition-colors">Add Collateral</button>
                 </td>
               </tr>
             ))}
@@ -155,8 +155,8 @@ export default function AssetPositions({ activeTab }: AssetPositionsProps) {
                   <div className="text-sm text-success font-medium">{position.apy}%</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button className="text-primary hover:text-blue-700 mr-3">Remove</button>
-                  <button className="text-secondary hover:text-green-700">Add</button>
+                  <button className="bg-primary text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors mr-2">Remove</button>
+                  <button className="bg-secondary text-white px-3 py-1 rounded-lg hover:bg-green-700 transition-colors">Add</button>
                 </td>
               </tr>
             ))}
