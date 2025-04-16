@@ -309,30 +309,13 @@ export default function SwapForm() {
             </div>
             
             <div className="mt-4">
-              {isConnected ? (
-                <Button 
-                  type="submit" 
-                  className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-4 px-6 rounded-lg font-bold text-md transition-all duration-200 shadow-md hover:shadow-lg btn-hover-effect"
-                >
-                  Swap Now
-                </Button>
-              ) : (
-                <div className="space-y-2">
-                  <Button 
-                    disabled
-                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-4 px-6 rounded-lg font-bold text-md opacity-60 cursor-not-allowed"
-                  >
-                    Swap Now
-                  </Button>
-                  <Button 
-                    type="button"
-                    onClick={() => openModal()}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow btn-hover-effect"
-                  >
-                    Connect Wallet to Swap
-                  </Button>
-                </div>
-              )}
+              <Button 
+                type={isConnected ? "submit" : "button"}
+                onClick={() => !isConnected && openModal()}
+                className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-4 px-6 rounded-lg font-bold text-md transition-all duration-200 shadow-md hover:shadow-lg btn-hover-effect"
+              >
+                Swap Now
+              </Button>
             </div>
           </form>
         </CardContent>

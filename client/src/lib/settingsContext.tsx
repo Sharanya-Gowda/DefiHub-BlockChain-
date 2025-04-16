@@ -72,11 +72,15 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     
     if (theme === 'system') {
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      root.classList.remove('light', 'dark');
-      root.classList.add(systemTheme);
+      if (systemTheme === 'dark') {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
+    } else if (theme === 'dark') {
+      root.classList.add('dark');
     } else {
-      root.classList.remove('light', 'dark');
-      root.classList.add(theme);
+      root.classList.remove('dark');
     }
     
     // Save to localStorage

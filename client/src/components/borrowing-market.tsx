@@ -99,29 +99,12 @@ export default function BorrowingMarket() {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    {isConnected ? (
-                      <Button 
-                        className="bg-purple-600 hover:bg-purple-700 text-white font-medium px-5 py-2 rounded-lg shadow-sm hover:shadow transition-all duration-200 btn-hover-effect"
-                        onClick={() => handleBorrow(item.asset.symbol)}
-                      >
-                        Borrow
-                      </Button>
-                    ) : (
-                      <div className="flex flex-col space-y-2">
-                        <Button 
-                          className="bg-purple-600 hover:bg-purple-700 text-white font-medium px-5 py-2 rounded-lg shadow-sm hover:shadow transition-all duration-200 btn-hover-effect opacity-50 cursor-not-allowed"
-                          disabled
-                        >
-                          Borrow
-                        </Button>
-                        <Button 
-                          className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1 rounded-md shadow-sm hover:shadow transition-all duration-200"
-                          onClick={() => openModal()}
-                        >
-                          Connect to Borrow
-                        </Button>
-                      </div>
-                    )}
+                    <Button 
+                      className={`bg-purple-600 hover:bg-purple-700 text-white font-medium px-5 py-2 rounded-lg shadow-sm hover:shadow transition-all duration-200 btn-hover-effect ${!isConnected ? 'opacity-80' : ''}`}
+                      onClick={() => isConnected ? handleBorrow(item.asset.symbol) : openModal()}
+                    >
+                      Borrow
+                    </Button>
                   </td>
                 </tr>
               ))}

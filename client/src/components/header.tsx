@@ -42,14 +42,14 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-gradient-to-r from-blue-50 via-white to-blue-50 border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <header className="bg-gradient-to-r from-blue-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link to="/">
               <div className="flex items-center">
                 <Logo />
-                <span className="ml-2 text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 hidden sm:inline-block">
+                <span className="ml-2 text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 hidden sm:inline-block dark:from-blue-400 dark:to-indigo-400">
                   DeFi Platform
                 </span>
               </div>
@@ -64,8 +64,8 @@ export default function Header() {
                 className={`
                   flex items-center px-4 py-2 rounded-full text-sm font-medium transition-all duration-200
                   ${isActive(item.path)
-                    ? "bg-blue-100 text-blue-700 shadow-sm"
-                    : "hover:bg-blue-50 text-gray-700 hover:text-blue-700"
+                    ? "bg-blue-100 text-blue-700 shadow-sm dark:bg-blue-900 dark:text-blue-300"
+                    : "hover:bg-blue-50 text-gray-700 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-blue-900 dark:hover:text-blue-300"
                   }
                 `}
               >
@@ -82,12 +82,12 @@ export default function Header() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="rounded-full hover:bg-blue-100"
+                    className="rounded-full hover:bg-blue-100 dark:hover:bg-blue-900"
                     onClick={toggleTheme}
                   >
                     {theme === 'light' ? 
-                      <Moon className="h-5 w-5 text-gray-700" /> : 
-                      <Sun className="h-5 w-5 text-gray-700" />
+                      <Moon className="h-5 w-5 text-gray-700 dark:text-gray-300" /> : 
+                      <Sun className="h-5 w-5 text-gray-700 dark:text-gray-300" />
                     }
                   </Button>
                 </TooltipTrigger>
@@ -103,10 +103,10 @@ export default function Header() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="rounded-full hover:bg-blue-100"
+                    className="rounded-full hover:bg-blue-100 dark:hover:bg-blue-900"
                     onClick={openSettings}
                   >
-                    <Settings className="h-5 w-5 text-gray-700" />
+                    <Settings className="h-5 w-5 text-gray-700 dark:text-gray-300" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -131,7 +131,7 @@ export default function Header() {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-200 bg-white shadow-lg absolute w-full z-50">
+        <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800 shadow-lg absolute w-full z-50">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {navigationItems.map((item) => (
               <Link
@@ -140,8 +140,8 @@ export default function Header() {
                 className={`
                   flex items-center px-4 py-3 rounded-lg text-base font-medium
                   ${isActive(item.path)
-                    ? "bg-blue-100 text-blue-700"
-                    : "text-gray-700 hover:bg-blue-50 hover:text-blue-700"
+                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                    : "text-gray-700 hover:bg-blue-50 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-blue-900 dark:hover:text-blue-300"
                   }
                 `}
                 onClick={() => setMobileMenuOpen(false)}
@@ -152,7 +152,7 @@ export default function Header() {
             ))}
             
             <button 
-              className="w-full flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700"
+              className="w-full flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-blue-900 dark:hover:text-blue-300"
               onClick={() => {
                 openSettings();
                 setMobileMenuOpen(false);
@@ -160,6 +160,20 @@ export default function Header() {
             >
               <Settings className="mr-3" size={18} />
               Settings
+            </button>
+            
+            <button 
+              className="w-full flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-blue-900 dark:hover:text-blue-300"
+              onClick={() => {
+                toggleTheme();
+                setMobileMenuOpen(false);
+              }}
+            >
+              {theme === 'light' ? 
+                <Moon className="mr-3" size={18} /> : 
+                <Sun className="mr-3" size={18} />
+              }
+              Switch to {theme === 'light' ? 'Dark' : 'Light'} Mode
             </button>
           </div>
         </div>
