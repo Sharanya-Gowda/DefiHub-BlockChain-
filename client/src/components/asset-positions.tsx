@@ -87,7 +87,7 @@ export default function AssetPositions({ activeTab }: AssetPositionsProps) {
                   <div className="text-xs text-gray-500 font-mono">${(position.amount * position.asset.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-accent font-medium">{position.interest}% APR</div>
+                  <div className="text-sm bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-semibold inline-block">{position.interest}% APR</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
@@ -106,8 +106,8 @@ export default function AssetPositions({ activeTab }: AssetPositionsProps) {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button className="bg-primary text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors mr-2">Repay</button>
-                  <button className="bg-secondary text-white px-3 py-1 rounded-lg hover:bg-green-700 transition-colors">Add Collateral</button>
+                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-semibold shadow-sm hover:shadow-md transition-all duration-200 mr-2">Repay</button>
+                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold shadow-sm hover:shadow-md transition-all duration-200">Add Collateral</button>
                 </td>
               </tr>
             ))}
@@ -152,11 +152,11 @@ export default function AssetPositions({ activeTab }: AssetPositionsProps) {
                   <div className="text-sm font-medium">{(position.share * 100).toFixed(2)}%</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-success font-medium">{position.apy}%</div>
+                  <div className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold inline-block">{position.apy}%</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button className="bg-primary text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors mr-2">Remove</button>
-                  <button className="bg-secondary text-white px-3 py-1 rounded-lg hover:bg-green-700 transition-colors">Add</button>
+                  <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold shadow-sm hover:shadow-md transition-all duration-200 mr-2">Remove</button>
+                  <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold shadow-sm hover:shadow-md transition-all duration-200">Add</button>
                 </td>
               </tr>
             ))}
