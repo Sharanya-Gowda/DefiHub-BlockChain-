@@ -34,6 +34,7 @@ export interface LendingMarketAsset {
   asset: Asset;
   marketSize: number;
   apy: number;
+  lender: string;
 }
 
 export interface BorrowingMarketAsset {
@@ -41,6 +42,7 @@ export interface BorrowingMarketAsset {
   available: number;
   interestRate: number;
   collateralRequired: number;
+  borrower: string;
 }
 
 export interface LiquidityPool {
@@ -205,6 +207,7 @@ export const lendingMarket: LendingMarketAsset[] = [
     asset: getAssetBySymbol("ETH"),
     marketSize: 15246 * 1825,
     apy: 3.2,
+    lender: "DeFi Pool A",
   },
   {
     asset: getAssetBySymbol("BTC"),
@@ -235,6 +238,7 @@ export const borrowingMarket: BorrowingMarketAsset[] = [
     available: 12400000,
     interestRate: 7.2,
     collateralRequired: 150,
+    borrower: "Crypto Fund X",
   },
   {
     asset: getAssetBySymbol("DAI"),

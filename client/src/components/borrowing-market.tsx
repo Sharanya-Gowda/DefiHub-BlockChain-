@@ -15,7 +15,7 @@ export default function BorrowingMarket() {
       openModal();
       return;
     }
-    
+
     // In a real DeFi app, this would navigate to the borrow form with the asset pre-selected
     toast({
       title: "Asset Selected",
@@ -35,7 +35,7 @@ export default function BorrowingMarket() {
             <span>Updated 1 min ago</span>
           </div>
         </div>
-        
+
         {!isConnected && (
           <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center">
             <AlertCircle className="h-5 w-5 text-blue-600 mr-2 flex-shrink-0" />
@@ -51,7 +51,7 @@ export default function BorrowingMarket() {
             </Button>
           </div>
         )}
-        
+
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-purple-50">
@@ -60,6 +60,7 @@ export default function BorrowingMarket() {
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-purple-700 uppercase tracking-wider">Available</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-purple-700 uppercase tracking-wider">Interest Rate</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-purple-700 uppercase tracking-wider">Collateral Required</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-purple-700 uppercase tracking-wider">Borrower</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-purple-700 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -97,6 +98,10 @@ export default function BorrowingMarket() {
                     <div className="text-sm font-semibold bg-blue-50 text-blue-700 px-4 py-1.5 rounded-full inline-block shadow-sm">
                       {item.collateralRequired}%
                     </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    {/* Added Borrower information */}
+                    {item.borrower}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <Button 

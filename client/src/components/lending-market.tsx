@@ -39,6 +39,7 @@ export default function LendingMarket() {
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Market Size</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">APY</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lender</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -65,6 +66,7 @@ export default function LendingMarket() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold inline-block">{item.apy}%</div>
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{item.lender}</td> {/* Added Lender Column */}
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <Button 
                       className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-semibold shadow-sm hover:shadow transition-all duration-200"
