@@ -213,21 +213,25 @@ export const lendingMarket: LendingMarketAsset[] = [
     asset: getAssetBySymbol("BTC"),
     marketSize: 985 * 57000,
     apy: 2.5,
+    lender: "Crypto Yield Fund",
   },
   {
     asset: getAssetBySymbol("USDC"),
     marketSize: 32568421,
     apy: 5.8,
+    lender: "Stablecoin Reserve",
   },
   {
     asset: getAssetBySymbol("LINK"),
     marketSize: 965420 * 11.5,
     apy: 2.1,
+    lender: "Oracle Pool X",
   },
   {
     asset: getAssetBySymbol("UNI"),
     marketSize: 524190 * 6.5,
     apy: 1.7,
+    lender: "DeFi Pool B",
   },
 ];
 
@@ -245,18 +249,21 @@ export const borrowingMarket: BorrowingMarketAsset[] = [
     available: 8200000,
     interestRate: 6.8,
     collateralRequired: 150,
+    borrower: "DeFi Lending Hub",
   },
   {
     asset: getAssetBySymbol("USDT"),
     available: 15600000,
     interestRate: 7.5,
     collateralRequired: 150,
+    borrower: "Stable Yield Fund",
   },
   {
     asset: getAssetBySymbol("ETH"),
     available: 2458 * 1825,
     interestRate: 3.5,
     collateralRequired: 175,
+    borrower: "ETH Trading Pool",
   },
 ];
 
