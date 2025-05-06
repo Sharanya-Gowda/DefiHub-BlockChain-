@@ -76,6 +76,16 @@ export default function LendingForm() {
           </div>
           
           <div className="mb-4">
+            <Label htmlFor="lenderWallet" className="block text-sm font-medium text-gray-700 mb-1">Your Wallet ID</Label>
+            <Input 
+              id="lenderWallet"
+              type="text"
+              placeholder="Enter your wallet ID"
+              className="block w-full pl-3 py-3 text-base border-gray-300 focus:ring-primary focus:border-primary rounded-lg"
+            />
+          </div>
+
+          <div className="mb-4">
             <Label htmlFor="lendAmount" className="block text-sm font-medium text-gray-700 mb-1">Amount</Label>
             <div className="relative rounded-lg shadow-sm">
               <Input 
