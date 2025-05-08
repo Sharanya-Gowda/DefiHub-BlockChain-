@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/lib/walletContext";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "wouter";
+import { useLocation } from "wouter";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -14,7 +14,7 @@ export default function Auth() {
   const [role, setRole] = useState("user");
   const { connectWallet, setIsAdmin } = useWallet();
   const { toast } = useToast();
-  const [, navigate] = useNavigate();
+  const [, setLocation] = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +35,7 @@ export default function Auth() {
           description: isLogin ? "Logged in successfully" : "Account created successfully",
         });
         
-        navigate(role === "admin" ? "/admin" : "/dashboard");
+        setLocation(role === "admin" ? "/admin" : "/dashboard");
       } else {
         throw new Error("Authentication failed");
       }
