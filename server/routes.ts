@@ -136,11 +136,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  const httpServer = createServer(app);
-  return httpServer;
-}
-
-
   // Auth routes
   app.post("/api/auth", async (req, res) => {
     const { email, password, isLogin } = req.body;
@@ -183,3 +178,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch transactions" });
     }
   });
+
+  const httpServer = createServer(app);
+  return httpServer;
+}
