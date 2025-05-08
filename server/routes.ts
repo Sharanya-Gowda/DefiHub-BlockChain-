@@ -136,49 +136,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Auth routes
-  app.post("/api/auth", async (req, res) => {
-    const { email, password, isLogin } = req.body;
-    
-    try {
-      if (isLogin) {
-        const user = await storage.getUserByEmail(email);
-        if (!user || user.password !== password) {
-          return res.status(401).json({ message: "Invalid credentials" });
-        }
-        res.json({ user });
-      } else {
-        const user = await storage.createUser({
-          username: email,
-          password,
-          walletAddress: ""
-        });
-        res.json({ user });
-      }
-    } catch (error) {
-      res.status(500).json({ message: "Authentication failed" });
-    }
-  });
-
-  // Admin routes
-  app.get("/api/admin/users", async (req, res) => {
-    try {
-      const users = await storage.getAllUsers();
-      res.json(users);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch users" });
-    }
-  });
-
-  app.get("/api/admin/transactions", async (req, res) => {
-    try {
-      const transactions = await storage.getAllTransactions();
-      res.json(transactions);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch transactions" });
-    }
-  });
-
   const httpServer = createServer(app);
   return httpServer;
 }

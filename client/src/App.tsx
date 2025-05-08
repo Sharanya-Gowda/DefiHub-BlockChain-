@@ -1,4 +1,3 @@
-
 import { Route, Switch } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
@@ -7,9 +6,6 @@ import Lend from "@/pages/lend";
 import Borrow from "@/pages/borrow";
 import Swap from "@/pages/swap";
 import History from "@/pages/history";
-import Auth from "@/pages/auth";
-import Admin from "@/pages/admin";
-import { useWallet } from "@/lib/walletContext";
 import Header from "@/components/header";
 import WalletConnectModal from "@/components/wallet-connect-modal";
 import SettingsModal from "@/components/settings-modal";
@@ -17,22 +13,10 @@ import { SettingsProvider } from "@/lib/settingsContext";
 import { WalletProvider } from "@/lib/walletContext";
 import { useEffect } from "react";
 
-function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) {
-  const { isConnected, isAdmin } = useWallet();
-  
-  if (!isConnected) {
-    return <Switch><Route path="*"><Auth /></Route></Switch>;
-  }
-  
-  if (requireAdmin && !isAdmin) {
-    return <Switch><Route path="*"><NotFound /></Route></Switch>;
-  }
-  
-  return <>{children}</>;
-}
-
 function App() {
+  // Apply global styles
   useEffect(() => {
+    // Add some nice animations for buttons
     const style = document.createElement('style');
     style.textContent = `
       .btn-hover-effect {
@@ -44,6 +28,7 @@ function App() {
       }
     `;
     document.head.appendChild(style);
+    
     return () => {
       document.head.removeChild(style);
     };
@@ -56,14 +41,12 @@ function App() {
           <Header />
           <main className="flex-grow flex flex-col">
             <Switch>
-              <Route path="/auth"><Auth /></Route>
-              <Route path="/"><ProtectedRoute><Dashboard /></ProtectedRoute></Route>
-              <Route path="/lend"><ProtectedRoute><Lend /></ProtectedRoute></Route>
-              <Route path="/borrow"><ProtectedRoute><Borrow /></ProtectedRoute></Route>
-              <Route path="/swap"><ProtectedRoute><Swap /></ProtectedRoute></Route>
-              <Route path="/history"><ProtectedRoute><History /></ProtectedRoute></Route>
-              <Route path="/admin"><ProtectedRoute requireAdmin={true}><Admin /></ProtectedRoute></Route>
-              <Route><NotFound /></Route>
+              <Route path="/" component={Dashboard} />
+              <Route path="/lend" component={Lend} />
+              <Route path="/borrow" component={Borrow} />
+              <Route path="/swap" component={Swap} />
+              <Route path="/history" component={History} />
+              <Route component={NotFound} />
             </Switch>
           </main>
           <WalletConnectModal />
