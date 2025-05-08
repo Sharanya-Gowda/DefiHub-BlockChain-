@@ -18,6 +18,7 @@ interface WalletContextType {
   closeModal: () => void;
   balance: string;
   chainId: number | null;
+  isAdmin: boolean; // Added isAdmin
 }
 
 // Provide a default context value
@@ -31,6 +32,7 @@ const defaultWalletContext: WalletContextType = {
   closeModal: () => {},
   balance: "0",
   chainId: null,
+  isAdmin: false, // Added isAdmin
 };
 
 const WalletContext = createContext<WalletContextType>(defaultWalletContext);
@@ -41,6 +43,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [balance, setBalance] = useState("0");
   const [chainId, setChainId] = useState<number | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false); // Added isAdmin
 
   // Detect if ethereum is available (MetaMask or similar)
   const hasEthereum = typeof window !== "undefined" && !!window.ethereum;
@@ -53,15 +56,15 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           // Use ethers v5 syntax
           const provider = new ethers.BrowserProvider(window.ethereum);
           const accounts = await provider.listAccounts();
-          
+
           if (accounts.length > 0) {
             setIsConnected(true);
             setAddress(accounts[0].address);
-            
+
             // Get chain ID
             const network = await provider.getNetwork();
             setChainId(Number(network.chainId));
-            
+
             // Get balance
             const balance = await provider.getBalance(accounts[0].address);
             setBalance(ethers.formatEther(balance));
@@ -71,7 +74,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         }
       }
     };
-    
+
     checkConnection();
   }, [hasEthereum]);
 
@@ -79,10 +82,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const mockWalletConnect = async (provider?: string) => {
     console.log("Mock connecting wallet with provider:", provider || "default");
     setIsConnected(true);
-    
+
     // Generate a random Ethereum address for demo
     let randomAddr = "";
-    
+
     // Simulate different providers returning different wallets for demo
     if (provider === "MetaMask") {
       randomAddr = "0x71C7656EC7ab88b098defB751B7401B5f6d8976F";
@@ -95,11 +98,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       randomAddr = "0x" + Array.from({length: 40}, () => 
         Math.floor(Math.random() * 16).toString(16)).join('');
     }
-    
+
     // Format address for display: 0x1234...5678
     const shortenedAddress = randomAddr.slice(0, 6) + "..." + randomAddr.slice(-4);
     setAddress(shortenedAddress);
-    
+
     // Mock balance based on provider
     if (provider === "MetaMask") {
       setBalance("2.541");
@@ -110,14 +113,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     } else {
       setBalance("1.234");
     }
-    
+
     // Mock chain ID (1 = Ethereum Mainnet, 137 = Polygon, etc.)
     if (provider === "WalletConnect") {
       setChainId(137); // Polygon
     } else {
       setChainId(1); // Ethereum Mainnet
     }
-    
+
     closeModal();
   };
 
@@ -127,28 +130,28 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       alert("Please install MetaMask or another Ethereum wallet to connect.");
       return;
     }
-    
+
     try {
       console.log("Connecting wallet with provider:", providerName || "default");
-      
+
       // Request access to the user's accounts using ethers v5 syntax
       const provider = new ethers.BrowserProvider(window.ethereum);
       await window.ethereum.request({ method: 'eth_requestAccounts' });
       const accounts = await provider.listAccounts();
-      
+
       if (accounts.length > 0) {
         setIsConnected(true);
         setAddress(accounts[0].address);
-        
+
         // Get chain ID
         const network = await provider.getNetwork();
         setChainId(Number(network.chainId));
-        
+
         // Get balance
         const balance = await provider.getBalance(accounts[0].address);
         setBalance(ethers.formatEther(balance));
       }
-      
+
       closeModal();
     } catch (error) {
       console.error("Failed to connect wallet:", error);
@@ -169,6 +172,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setAddress(null);
     setBalance("0");
     setChainId(null);
+    setIsAdmin(false); //Added setIsAdmin(false)
   };
 
   const openModal = () => {
@@ -191,6 +195,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     closeModal,
     balance,
     chainId,
+    isAdmin, // Added isAdmin
   };
 
   return (

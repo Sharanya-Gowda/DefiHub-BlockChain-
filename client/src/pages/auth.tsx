@@ -10,6 +10,7 @@ export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("user");
   const { connectWallet } = useWallet();
   const { toast } = useToast();
 
@@ -66,6 +67,18 @@ export default function Auth() {
               required
             />
           </div>
+          {!isLogin && (
+            <div>
+              <select 
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="w-full p-2 border rounded"
+              >
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+          )}
           <Button type="submit" className="w-full">
             {isLogin ? "Login" : "Sign Up"}
           </Button>
