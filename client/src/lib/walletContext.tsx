@@ -18,7 +18,8 @@ interface WalletContextType {
   closeModal: () => void;
   balance: string;
   chainId: number | null;
-  isAdmin: boolean; // Added isAdmin
+  isAdmin: boolean;
+  setIsAdmin: (isAdmin: boolean) => void;
 }
 
 // Provide a default context value
@@ -43,7 +44,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [balance, setBalance] = useState("0");
   const [chainId, setChainId] = useState<number | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false); // Added isAdmin
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // Detect if ethereum is available (MetaMask or similar)
   const hasEthereum = typeof window !== "undefined" && !!window.ethereum;
@@ -195,7 +196,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     closeModal,
     balance,
     chainId,
-    isAdmin, // Added isAdmin
+    isAdmin,
+    setIsAdmin,
   };
 
   return (

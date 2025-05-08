@@ -17,9 +17,17 @@ import { SettingsProvider } from "@/lib/settingsContext";
 import { WalletProvider } from "@/lib/walletContext";
 import { useEffect } from "react";
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isConnected } = useWallet();
-  if (!isConnected) return <Switch><Route path="*"><Auth /></Route></Switch>;
+function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) {
+  const { isConnected, isAdmin } = useWallet();
+  
+  if (!isConnected) {
+    return <Switch><Route path="*"><Auth /></Route></Switch>;
+  }
+  
+  if (requireAdmin && !isAdmin) {
+    return <Switch><Route path="*"><NotFound /></Route></Switch>;
+  }
+  
   return <>{children}</>;
 }
 
@@ -54,7 +62,7 @@ function App() {
               <Route path="/borrow"><ProtectedRoute><Borrow /></ProtectedRoute></Route>
               <Route path="/swap"><ProtectedRoute><Swap /></ProtectedRoute></Route>
               <Route path="/history"><ProtectedRoute><History /></ProtectedRoute></Route>
-              <Route path="/admin"><ProtectedRoute><Admin /></ProtectedRoute></Route>
+              <Route path="/admin"><ProtectedRoute requireAdmin={true}><Admin /></ProtectedRoute></Route>
               <Route><NotFound /></Route>
             </Switch>
           </main>

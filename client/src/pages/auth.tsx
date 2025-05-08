@@ -5,38 +5,44 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/lib/walletContext";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "wouter";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("user");
-  const { connectWallet } = useWallet();
+  const { connectWallet, setIsAdmin } = useWallet();
   const { toast } = useToast();
+  const [, navigate] = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Here you would integrate with your backend auth
       const response = await fetch("/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, isLogin }),
+        body: JSON.stringify({ email, password, isLogin, role }),
       });
       
       if (response.ok) {
         const data = await response.json();
-        // Connect wallet after successful auth
         await connectWallet();
+        setIsAdmin(role === "admin");
+        
         toast({
           title: "Success!",
           description: isLogin ? "Logged in successfully" : "Account created successfully",
         });
+        
+        navigate(role === "admin" ? "/admin" : "/dashboard");
+      } else {
+        throw new Error("Authentication failed");
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Authentication failed",
+        description: "Authentication failed. Please check your credentials.",
         variant: "destructive",
       });
     }
@@ -67,18 +73,16 @@ export default function Auth() {
               required
             />
           </div>
-          {!isLogin && (
-            <div>
-              <select 
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full p-2 border rounded"
-              >
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div>
-          )}
+          <div>
+            <select 
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full p-2 border rounded"
+            >
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
           <Button type="submit" className="w-full">
             {isLogin ? "Login" : "Sign Up"}
           </Button>
