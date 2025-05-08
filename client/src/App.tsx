@@ -15,6 +15,14 @@ import SettingsModal from "@/components/settings-modal";
 import { SettingsProvider } from "@/lib/settingsContext";
 import { WalletProvider } from "@/lib/walletContext";
 import { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isConnected } = useWallet();
+  if (!isConnected) return <Navigate to="/auth" />;
+  return <>{children}</>;
+}
 
 function App() {
   // Apply global styles
@@ -31,7 +39,7 @@ function App() {
       }
     `;
     document.head.appendChild(style);
-    
+
     return () => {
       document.head.removeChild(style);
     };
@@ -40,22 +48,26 @@ function App() {
   return (
     <SettingsProvider>
       <WalletProvider>
-        <div className="min-h-screen bg-gray-50 flex flex-col">
-          <Header />
-          <main className="flex-grow flex flex-col">
-            <Switch>
-              <Route path="/" component={Dashboard} />
-              <Route path="/lend" component={Lend} />
-              <Route path="/borrow" component={Borrow} />
-              <Route path="/swap" component={Swap} />
-              <Route path="/history" component={History} />
-              <Route component={NotFound} />
-            </Switch>
-          </main>
-          <WalletConnectModal />
-          <SettingsModal />
-          <Toaster />
-        </div>
+        <Router>
+          <div className="min-h-screen bg-gray-50 flex flex-col">
+            <Header />
+            <main className="flex-grow flex flex-col">
+              <Routes>
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                <Route path="/lend" element={<ProtectedRoute><Lend /></ProtectedRoute>} />
+                <Route path="/borrow" element={<ProtectedRoute><Borrow /></ProtectedRoute>} />
+                <Route path="/swap" element={<ProtectedRoute><Swap /></ProtectedRoute>} />
+                <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
+                <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
+            <WalletConnectModal />
+            <SettingsModal />
+            <Toaster />
+          </div>
+        </Router>
       </WalletProvider>
     </SettingsProvider>
   );
