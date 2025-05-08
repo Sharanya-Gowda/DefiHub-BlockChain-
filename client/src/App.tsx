@@ -1,3 +1,4 @@
+
 import { Route, Switch } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
@@ -15,19 +16,15 @@ import SettingsModal from "@/components/settings-modal";
 import { SettingsProvider } from "@/lib/settingsContext";
 import { WalletProvider } from "@/lib/walletContext";
 import { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isConnected } = useWallet();
-  if (!isConnected) return <Navigate to="/auth" />;
+  if (!isConnected) return <Switch><Route path="*"><Auth /></Route></Switch>;
   return <>{children}</>;
 }
 
 function App() {
-  // Apply global styles
   useEffect(() => {
-    // Add some nice animations for buttons
     const style = document.createElement('style');
     style.textContent = `
       .btn-hover-effect {
@@ -39,7 +36,6 @@ function App() {
       }
     `;
     document.head.appendChild(style);
-
     return () => {
       document.head.removeChild(style);
     };
@@ -48,26 +44,24 @@ function App() {
   return (
     <SettingsProvider>
       <WalletProvider>
-        <Router>
-          <div className="min-h-screen bg-gray-50 flex flex-col">
-            <Header />
-            <main className="flex-grow flex flex-col">
-              <Routes>
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/lend" element={<ProtectedRoute><Lend /></ProtectedRoute>} />
-                <Route path="/borrow" element={<ProtectedRoute><Borrow /></ProtectedRoute>} />
-                <Route path="/swap" element={<ProtectedRoute><Swap /></ProtectedRoute>} />
-                <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
-                <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </main>
-            <WalletConnectModal />
-            <SettingsModal />
-            <Toaster />
-          </div>
-        </Router>
+        <div className="min-h-screen bg-gray-50 flex flex-col">
+          <Header />
+          <main className="flex-grow flex flex-col">
+            <Switch>
+              <Route path="/auth"><Auth /></Route>
+              <Route path="/"><ProtectedRoute><Dashboard /></ProtectedRoute></Route>
+              <Route path="/lend"><ProtectedRoute><Lend /></ProtectedRoute></Route>
+              <Route path="/borrow"><ProtectedRoute><Borrow /></ProtectedRoute></Route>
+              <Route path="/swap"><ProtectedRoute><Swap /></ProtectedRoute></Route>
+              <Route path="/history"><ProtectedRoute><History /></ProtectedRoute></Route>
+              <Route path="/admin"><ProtectedRoute><Admin /></ProtectedRoute></Route>
+              <Route><NotFound /></Route>
+            </Switch>
+          </main>
+          <WalletConnectModal />
+          <SettingsModal />
+          <Toaster />
+        </div>
       </WalletProvider>
     </SettingsProvider>
   );
