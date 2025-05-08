@@ -1,82 +1,33 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CryptoIcon } from "@/components/ui/crypto-icon";
-import { useWallet } from "@/lib/walletContext";
-import { lendingMarket } from "@/lib/mockData";
-import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { assets } from "@/lib/mockData";
 
 export default function LendingMarket() {
-  const { isConnected, openModal } = useWallet();
-  const { toast } = useToast();
-
-  const handleLend = (assetSymbol: string) => {
-    if (!isConnected) {
-      openModal();
-      return;
-    }
-
-    // In a real DeFi app, this would navigate to the lend form with the asset pre-selected
-    toast({
-      title: "Asset Selected",
-      description: `Selected ${assetSymbol} for lending`,
-    });
-  };
-
   return (
-    <Card className="bg-white shadow-sm border border-gray-100">
-      <CardContent className="p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium text-gray-900">Lending Market</h3>
-          <div className="text-sm text-gray-500">
-            <span>Updated 1 min ago</span>
-          </div>
-        </div>
-
+    <Card>
+      <CardHeader>
+        <CardTitle>Lending Market</CardTitle>
+      </CardHeader>
+      <CardContent>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="w-full">
+            <thead>
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Market Size</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">APY</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lender</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="text-left p-2">Asset</th>
+                <th className="text-left p-2">APY</th>
+                <th className="text-left p-2">Total Supply</th>
+                <th className="text-right p-2">Action</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {lendingMarket.map((item, index) => (
-                <tr key={`lending-market-${index}`}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <CryptoIcon src={item.asset.icon} alt={item.asset.symbol} />
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{item.asset.name}</div>
-                        <div className="text-xs text-gray-500">{item.asset.symbol}</div>
-                      </div>
-                    </div>
+            <tbody>{assets.map((asset) => (
+                <tr key={asset.symbol}>
+                  <td className="p-2">{asset.name}</td>
+                  <td className="p-2">{asset.lendingAPY}%</td>
+                  <td className="p-2">${asset.totalSupply.toLocaleString()}</td>
+                  <td className="text-right p-2">
+                    <Button size="sm">Lend</Button>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-mono">
-                      {(item.marketSize / item.asset.price).toLocaleString(undefined, { maximumFractionDigits: 0 })} {item.asset.symbol}
-                    </div>
-                    <div className="text-xs text-gray-500 font-mono">
-                      ${(item.marketSize / 1000000).toFixed(2)}M
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold inline-block">{item.apy}%</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{item.lender}</td> {/* Added Lender Column */}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <Button 
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-semibold shadow-sm hover:shadow transition-all duration-200"
-                      onClick={() => handleLend(item.asset.symbol)}
-                    >
-                      Lend
-                    </Button>
-                  </td>
-                </tr>
-              ))}
+                </tr>))}
             </tbody>
           </table>
         </div>
