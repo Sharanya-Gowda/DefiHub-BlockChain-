@@ -11,6 +11,7 @@ import SwapForm from "@/components/swap-form";
 import LiquidityPools from "@/components/liquidity-pools";
 import TransactionsTable from "@/components/transactions-table";
 import { MarketOverview } from "@/components/price-ticker";
+import TransferForm from "@/components/transfer-form";
 import { TrendingUp, DollarSign, RefreshCw, Clock, ChevronRight, BarChart2, ShieldCheck } from "lucide-react";
 
 export default function Dashboard() {
@@ -191,14 +192,18 @@ export default function Dashboard() {
         {activeTab === "swap" && (
           <div className="py-2">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Swap Form */}
-              <div className="lg:col-span-1">
+              {/* Swap & Transfer Forms */}
+              <div className="lg:col-span-1 space-y-6">
                 <div className="bg-emerald-50 bg-opacity-70 rounded-xl p-4 border border-emerald-100">
                   <h3 className="text-lg font-semibold text-emerald-800 mb-4 flex items-center">
                     <RefreshCw className="mr-2 h-5 w-5" />
                     Swap Tokens
                   </h3>
                   <SwapForm />
+                </div>
+                
+                <div className="bg-blue-50 bg-opacity-70 rounded-xl p-4 border border-blue-100">
+                  <TransferForm />
                 </div>
               </div>
               

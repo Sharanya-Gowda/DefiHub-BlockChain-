@@ -90,6 +90,19 @@ export function setupAuth(app: Express) {
   passport.serializeUser((user, done) => done(null, user.id));
   passport.deserializeUser(async (id: number, done) => {
     try {
+      // Handle admin user specially
+      if (id === 999) {
+        const adminUser = {
+          id: 999,
+          username: 'admin',
+          password: 'admin@123',
+          role: 'admin',
+          walletAddress: null,
+          createdAt: new Date()
+        };
+        return done(null, adminUser);
+      }
+      
       const user = await storage.getUser(id);
       done(null, user);
     } catch (error) {

@@ -318,6 +318,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User-to-user transfer endpoint
+  app.post("/api/transfer", async (req, res) => {
+    try {
+      const { recipientUsername, assetSymbol, amount } = req.body;
+      
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const sender = req.user;
+      const recipient = await storage.getUserByUsername(recipientUsername);
+      
+      if (!recipient) {
+        return res.status(404).json({ message: "Recipient not found" });
+      }
+      
+      if (sender.id === recipient.id) {
+        return res.status(400).json({ message: "Cannot transfer to yourself" });
+      }
+      
+      const asset = await storage.getAssetBySymbol(assetSymbol);
+      if (!asset) {
+        return res.status(404).json({ message: "Asset not found" });
+      }
+      
+      // Create transfer transaction for sender (outgoing)
+      await storage.createTransaction({
+        userId: sender.id,
+        type: "transfer_out",
+        assetId: asset.id,
+        amount: -amount,
+        toAssetId: null,
+        fromAssetId: null,
+        status: "completed"
+      });
+      
+      // Create transfer transaction for recipient (incoming)
+      await storage.createTransaction({
+        userId: recipient.id,
+        type: "transfer_in",
+        assetId: asset.id,
+        amount: amount,
+        toAssetId: null,
+        fromAssetId: null,
+        status: "completed"
+      });
+      
+      res.json({ 
+        message: `Successfully transferred ${amount} ${assetSymbol} to ${recipientUsername}`,
+        transfer: {
+          from: sender.username,
+          to: recipient.username,
+          amount,
+          asset: assetSymbol
+        }
+      });
+    } catch (error) {
+      console.error("Transfer error:", error);
+      res.status(500).json({ message: "Transfer failed" });
+    }
+  });
+
   // Liquidation Testing & Management Routes
   app.post("/api/liquidation/test/create-scenarios", async (req, res) => {
     try {
