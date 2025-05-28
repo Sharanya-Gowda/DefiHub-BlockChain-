@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { queryClient } from "@/lib/queryClient";
 import { WalletProvider } from "@/lib/walletContext";
 import { SettingsProvider } from "@/lib/settingsContext";
+import SettingsModal from "@/components/settings-modal";
+import WalletConnectModal from "@/components/wallet-connect-modal";
 import { useAuth } from "@/hooks/use-auth";
 import { AuthProvider } from "@/hooks/use-auth";
 import Header from "@/components/header";
@@ -126,6 +128,8 @@ export default function App() {
         <WalletProvider>
           <SettingsProvider>
             <AppRouter />
+            <SettingsModal />
+            <WalletConnectModal />
             <Toaster />
           </SettingsProvider>
         </WalletProvider>
