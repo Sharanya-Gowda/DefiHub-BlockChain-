@@ -3,6 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { 
   Users, 
   Activity, 
@@ -13,7 +17,13 @@ import {
   LogOut,
   Eye,
   Ban,
-  CheckCircle
+  CheckCircle,
+  UserX,
+  UserCheck,
+  AlertTriangle,
+  Database,
+  Server,
+  Zap
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
@@ -49,6 +59,16 @@ export default function AdminDashboard() {
     totalVolume: 0,
     activeUsers: 0
   });
+  const [systemSettings, setSystemSettings] = useState({
+    maintenanceMode: false,
+    newUserRegistration: true,
+    liquidationThreshold: 150,
+    liquidationPenalty: 10,
+    minimumCollateralRatio: 120
+  });
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [showUserDetails, setShowUserDetails] = useState(false);
+  const [showSystemSettings, setShowSystemSettings] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -166,13 +186,145 @@ export default function AdminDashboard() {
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full"
-              >
-                <Settings className="h-5 w-5" />
-              </Button>
+              <Dialog open={showSystemSettings} onOpenChange={setShowSystemSettings}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-full"
+                  >
+                    <Settings className="h-5 w-5" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px]">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center">
+                      <Server className="h-5 w-5 mr-2" />
+                      System Settings
+                    </DialogTitle>
+                    <DialogDescription>
+                      Configure platform-wide settings and security controls
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-6 py-4">
+                    <div className="space-y-4">
+                      <h4 className="text-sm font-medium flex items-center">
+                        <Shield className="h-4 w-4 mr-2" />
+                        Platform Controls
+                      </h4>
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label htmlFor="maintenance">Maintenance Mode</Label>
+                          <p className="text-xs text-muted-foreground">
+                            Disable all trading when enabled
+                          </p>
+                        </div>
+                        <Switch
+                          id="maintenance"
+                          checked={systemSettings.maintenanceMode}
+                          onCheckedChange={(checked) => 
+                            setSystemSettings(prev => ({ ...prev, maintenanceMode: checked }))
+                          }
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label htmlFor="registration">New User Registration</Label>
+                          <p className="text-xs text-muted-foreground">
+                            Allow new users to register
+                          </p>
+                        </div>
+                        <Switch
+                          id="registration"
+                          checked={systemSettings.newUserRegistration}
+                          onCheckedChange={(checked) => 
+                            setSystemSettings(prev => ({ ...prev, newUserRegistration: checked }))
+                          }
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h4 className="text-sm font-medium flex items-center">
+                        <AlertTriangle className="h-4 w-4 mr-2" />
+                        Risk Management
+                      </h4>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="liquidation-threshold">
+                            Liquidation Threshold (%)
+                          </Label>
+                          <Input
+                            id="liquidation-threshold"
+                            value={systemSettings.liquidationThreshold}
+                            onChange={(e) => 
+                              setSystemSettings(prev => ({ 
+                                ...prev, 
+                                liquidationThreshold: parseInt(e.target.value) || 150 
+                              }))
+                            }
+                            type="number"
+                            min="100"
+                            max="300"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="liquidation-penalty">
+                            Liquidation Penalty (%)
+                          </Label>
+                          <Input
+                            id="liquidation-penalty"
+                            value={systemSettings.liquidationPenalty}
+                            onChange={(e) => 
+                              setSystemSettings(prev => ({ 
+                                ...prev, 
+                                liquidationPenalty: parseInt(e.target.value) || 10 
+                              }))
+                            }
+                            type="number"
+                            min="1"
+                            max="50"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="collateral-ratio">
+                          Minimum Collateral Ratio (%)
+                        </Label>
+                        <Input
+                          id="collateral-ratio"
+                          value={systemSettings.minimumCollateralRatio}
+                          onChange={(e) => 
+                            setSystemSettings(prev => ({ 
+                              ...prev, 
+                              minimumCollateralRatio: parseInt(e.target.value) || 120 
+                            }))
+                          }
+                          type="number"
+                          min="100"
+                          max="200"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-end space-x-2">
+                      <Button variant="outline" onClick={() => setShowSystemSettings(false)}>
+                        Cancel
+                      </Button>
+                      <Button onClick={() => {
+                        toast({
+                          title: "Settings Updated",
+                          description: "System settings have been applied successfully",
+                        });
+                        setShowSystemSettings(false);
+                      }}>
+                        <Zap className="h-4 w-4 mr-2" />
+                        Apply Settings
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
               <Button
                 variant="outline"
                 onClick={handleLogout}

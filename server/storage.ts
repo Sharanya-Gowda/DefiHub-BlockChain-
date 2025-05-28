@@ -70,6 +70,7 @@ export interface IStorage {
   getUserTransactions(userId: number): Promise<Transaction[]>;
   getTransaction(id: number): Promise<Transaction | undefined>;
   createTransaction(transaction: InsertTransaction): Promise<Transaction>;
+  getAllTransactions(): Promise<Transaction[]>;
 }
 
 export class MemStorage implements IStorage {
