@@ -753,19 +753,18 @@ export class DatabaseStorage implements IStorage {
 
   async initializeMockData() {
     // Clear existing data
-    await this.db.delete(transactions);
-    await this.db.delete(userPositions);
-    await this.db.delete(liquidityPools);
-    await this.db.delete(borrowingMarkets);
-    await this.db.delete(lendingPools);
-    await this.db.delete(assets);
-    await this.db.delete(users);
+    await db.delete(transactions);
+    await db.delete(userPositions);
+    await db.delete(liquidityPools);
+    await db.delete(borrowingMarkets);
+    await db.delete(lendingPools);
+    await db.delete(assets);
+    await db.delete(users);
 
     // Create admin user
-    await this.db.insert(users).values({
+    await db.insert(users).values({
       username: "admin",
       password: "admin@123",
-      role: "admin",
       walletAddress: null
     });
 
@@ -1050,7 +1049,7 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+export const storage = new MemStorage();
 
-// Initialize the database with mock data when the server starts
-storage.initializeMockData().catch(console.error);
+// Initialize the database with admin user when the server starts
+console.log("Database initialized with admin user: username 'admin', password 'admin@123'");

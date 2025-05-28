@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { liquidationEngine } from "./liquidation-engine";
 
 const app = express();
 app.use(express.json());
@@ -66,5 +67,11 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    
+    // Start the liquidation engine automatically
+    setTimeout(() => {
+      liquidationEngine.start();
+      log("🚀 Liquidation Engine started - monitoring positions for safety");
+    }, 2000); // Start after 2 seconds to ensure everything is ready
   });
 })();

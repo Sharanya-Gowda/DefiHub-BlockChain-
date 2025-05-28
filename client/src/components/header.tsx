@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { useLocation, Link } from "react-router-dom";
-import { useAuth } from "@/lib/authContext";
+import { useLocation, Link } from "wouter";
+import { useAuth } from "@/hooks/use-auth";
 import WalletConnectButton from "@/components/wallet-connect-button";
 import { Logo } from "@/components/ui/logo";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { 
   Menu, 

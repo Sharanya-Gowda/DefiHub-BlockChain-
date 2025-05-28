@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import {
   insertAssetSchema,
@@ -8,13 +9,16 @@ import {
   insertLiquidityPoolSchema,
   insertUserPositionSchema,
   insertTransactionSchema,
-  insertUserSchema,
-  loginUserSchema
+  insertUserSchema
 } from "@shared/schema";
 import { z } from "zod";
+import { liquidationEngine } from "./liquidation-engine";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Authentication API
+  // Setup authentication routes
+  setupAuth(app);
+
+  // Authentication API (backup routes)
   app.post("/api/auth/login", async (req, res) => {
     try {
       const { username, password } = loginUserSchema.parse(req.body);
@@ -223,6 +227,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.error("Transaction error:", error);
       res.status(500).json({ message: "Failed to create transaction" });
+    }
+  });
+
+  // Liquidation Engine API Routes
+  app.get("/api/liquidation/stats", async (req, res) => {
+    try {
+      const stats = liquidationEngine.getStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Get liquidation stats error:", error);
+      res.status(500).json({ message: "Failed to get liquidation stats" });
+    }
+  });
+
+  app.get("/api/liquidation/events", async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const events = liquidationEngine.getRecentEvents(limit);
+      res.json(events);
+    } catch (error) {
+      console.error("Get liquidation events error:", error);
+      res.status(500).json({ message: "Failed to get liquidation events" });
+    }
+  });
+
+  app.post("/api/liquidation/start", async (req, res) => {
+    try {
+      liquidationEngine.start();
+      res.json({ message: "Liquidation engine started successfully", isRunning: true });
+    } catch (error) {
+      console.error("Start liquidation engine error:", error);
+      res.status(500).json({ message: "Failed to start liquidation engine" });
+    }
+  });
+
+  app.post("/api/liquidation/stop", async (req, res) => {
+    try {
+      liquidationEngine.stop();
+      res.json({ message: "Liquidation engine stopped successfully", isRunning: false });
+    } catch (error) {
+      console.error("Stop liquidation engine error:", error);
+      res.status(500).json({ message: "Failed to stop liquidation engine" });
+    }
+  });
+
+  app.post("/api/liquidation/trigger/:positionId", async (req, res) => {
+    try {
+      const positionId = parseInt(req.params.positionId);
+      const result = await liquidationEngine.triggerManualLiquidation(positionId);
+      
+      if (result.success) {
+        res.json(result);
+      } else {
+        res.status(400).json(result);
+      }
+    } catch (error) {
+      console.error("Manual liquidation error:", error);
+      res.status(500).json({ message: "Failed to trigger manual liquidation" });
+    }
+  });
+
+  app.post("/api/liquidation/config", async (req, res) => {
+    try {
+      const { liquidationThreshold, liquidationPenalty, healthFactorThreshold } = req.body;
+      
+      liquidationEngine.updateConfig({
+        liquidationThreshold: liquidationThreshold || undefined,
+        liquidationPenalty: liquidationPenalty || undefined,
+        healthFactorThreshold: healthFactorThreshold || undefined
+      });
+      
+      res.json({ message: "Liquidation configuration updated successfully" });
+    } catch (error) {
+      console.error("Update liquidation config error:", error);
+      res.status(500).json({ message: "Failed to update liquidation configuration" });
     }
   });
 
