@@ -27,7 +27,7 @@ export default function AuthPage() {
 
   // Redirect if already logged in
   if (user) {
-    if (user.role === 'admin') {
+    if (user.username === 'admin') {
       setLocation('/admin');
     } else {
       setLocation('/dashboard');
