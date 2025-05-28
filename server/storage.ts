@@ -29,6 +29,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByWalletAddress(address: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  getAllUsers(): Promise<User[]>;
 
   // Asset methods
   getAllAssets(): Promise<Asset[]>;
@@ -530,6 +531,14 @@ export class MemStorage implements IStorage {
     };
     this.transactionsMap.set(id, transaction);
     return transaction;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return Array.from(this.usersMap.values());
+  }
+
+  async getAllTransactions(): Promise<Transaction[]> {
+    return Array.from(this.transactionsMap.values());
   }
 }
 
