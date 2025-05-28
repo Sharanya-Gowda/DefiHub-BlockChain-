@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import { useAuth } from "@/hooks/use-auth";
 
 interface User {
   id: number;
@@ -112,9 +113,11 @@ export default function AdminDashboard() {
     }
   };
 
+  const { logoutMutation } = useAuth();
+  
   const handleLogout = async () => {
     try {
-      await fetch('/api/logout', { method: 'POST' });
+      await logoutMutation.mutateAsync();
       setLocation('/auth');
       toast({
         title: "Logged Out",
@@ -122,6 +125,11 @@ export default function AdminDashboard() {
       });
     } catch (error) {
       console.error('Logout failed:', error);
+      toast({
+        title: "Logout Failed",
+        description: "Failed to logout. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
