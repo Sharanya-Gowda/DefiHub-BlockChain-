@@ -56,8 +56,6 @@ export default function AuthPage() {
       return;
     }
 
-    setIsLoading(true);
-
     try {
       const response = await fetch('/api/register', {
         method: 'POST',
