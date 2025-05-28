@@ -13,6 +13,7 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 import { liquidationEngine } from "./liquidation-engine";
+import { createTestLiquidationScenarios, simulatePriceVolatility, getLiquidationSystemStatus } from "./test-liquidation";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
@@ -302,6 +303,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Update liquidation config error:", error);
       res.status(500).json({ message: "Failed to update liquidation configuration" });
+    }
+  });
+
+  // Liquidation Testing & Management Routes
+  app.post("/api/liquidation/test/create-scenarios", async (req, res) => {
+    try {
+      const result = await createTestLiquidationScenarios();
+      res.json({ 
+        message: "Test liquidation scenarios created successfully",
+        scenarios: result.scenarios,
+        testUsers: [result.testUser1.id, result.testUser2.id]
+      });
+    } catch (error) {
+      console.error("Create test scenarios error:", error);
+      res.status(500).json({ message: "Failed to create test scenarios" });
+    }
+  });
+
+  app.post("/api/liquidation/test/simulate-volatility", async (req, res) => {
+    try {
+      await simulatePriceVolatility();
+      res.json({ message: "Market volatility simulated - check positions for liquidation triggers" });
+    } catch (error) {
+      console.error("Simulate volatility error:", error);
+      res.status(500).json({ message: "Failed to simulate market volatility" });
+    }
+  });
+
+  app.get("/api/liquidation/system-status", async (req, res) => {
+    try {
+      const status = getLiquidationSystemStatus();
+      res.json(status);
+    } catch (error) {
+      console.error("Get system status error:", error);
+      res.status(500).json({ message: "Failed to get liquidation system status" });
     }
   });
 
