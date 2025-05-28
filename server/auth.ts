@@ -52,12 +52,25 @@ export function setupAuth(app: Express) {
   passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
+        // Check for admin user first
+        if (username === 'admin' && password === 'admin@123') {
+          const adminUser = {
+            id: 999,
+            username: 'admin',
+            password: 'admin@123',
+            role: 'admin',
+            walletAddress: null,
+            createdAt: new Date()
+          };
+          return done(null, adminUser);
+        }
+
         const user = await storage.getUserByUsername(username);
         if (!user) {
           return done(null, false);
         }
 
-        // For admin user, check plain password (in production, hash this!)
+        // For regular users, check password
         if (username === "admin" && password === "admin@123") {
           return done(null, user);
         }

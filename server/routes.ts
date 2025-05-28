@@ -22,11 +22,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication API (backup routes)
   app.post("/api/auth/login", async (req, res) => {
     try {
-      const { username, password } = loginUserSchema.parse(req.body);
+      const { username, password } = req.body;
       
-      const user = await storage.getUserByCredentials(username, password);
+      // Simple credential check for admin and users
+      if (username === 'admin' && password === 'admin@123') {
+        const adminUser = {
+          id: 999,
+          username: 'admin',
+          role: 'admin',
+          walletAddress: null
+        };
+        return res.json({ user: adminUser });
+      }
       
-      if (!user) {
+      // Check regular users
+      const user = await storage.getUserByUsername(username);
+      
+      if (!user || user.password !== password) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
       
@@ -34,7 +46,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         user: { 
           id: user.id, 
           username: user.username, 
-          role: user.role,
+          role: user.role || 'user',
           walletAddress: user.walletAddress 
         } 
       });
