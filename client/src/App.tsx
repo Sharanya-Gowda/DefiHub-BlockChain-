@@ -80,19 +80,11 @@ function AppRouter() {
     );
   }
 
-  // If not authenticated and not on auth page, redirect to auth
-  if (!user && location !== '/auth') {
-    return <AuthPage />;
-  }
-
   return (
     <Switch>
       <Route path="/auth" component={AuthPage} />
       <Route path="/admin">
         <AdminRoute component={AdminDashboard} />
-      </Route>
-      <Route path="/">
-        <ProtectedRoute component={Dashboard} />
       </Route>
       <Route path="/dashboard">
         <ProtectedRoute component={Dashboard} />
@@ -108,6 +100,19 @@ function AppRouter() {
       </Route>
       <Route path="/history">
         <ProtectedRoute component={History} />
+      </Route>
+      <Route path="/">
+        {user ? (
+          // Redirect authenticated users to their appropriate dashboard
+          user.username === 'admin' ? (
+            <AdminRoute component={AdminDashboard} />
+          ) : (
+            <ProtectedRoute component={Dashboard} />
+          )
+        ) : (
+          // Show login page for unauthenticated users
+          <AuthPage />
+        )}
       </Route>
       <Route component={NotFound} />
     </Switch>
