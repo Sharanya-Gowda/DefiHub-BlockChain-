@@ -59,8 +59,7 @@ function AdminRoute({ component: Component }: { component: () => React.JSX.Eleme
   }
 
   if (!user || user.username !== 'admin') {
-    setLocation('/auth');
-    return null;
+    return <Redirect to="/auth" />;
   }
 
   return <Component />;
