@@ -220,6 +220,21 @@ export default function Dashboard() {
         )}
       </div>
       
+      {/* Social Sharing - Investment Achievements */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-8">
+        <div className="flex justify-between items-center mb-5">
+          <h2 className="text-xl font-bold text-gray-800 flex items-center">
+            <Share className="mr-2 h-5 w-5 text-blue-600" />
+            Share Your Success
+          </h2>
+        </div>
+        <SocialSharing 
+          portfolioValue={25000}
+          totalProfit={5000}
+          profitPercentage={25}
+        />
+      </div>
+
       {/* Recent Transactions */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-8">
         <div className="flex justify-between items-center mb-5">
