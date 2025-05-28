@@ -70,11 +70,6 @@ export function setupAuth(app: Express) {
           return done(null, false);
         }
 
-        // For regular users, check password
-        if (username === "admin" && password === "admin@123") {
-          return done(null, user);
-        }
-
         // For regular users, compare hashed passwords
         if (await comparePasswords(password, user.password)) {
           return done(null, user);
