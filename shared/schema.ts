@@ -8,6 +8,8 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   walletAddress: varchar("wallet_address", { length: 42 }),
+  role: varchar("role", { length: 10 }).notNull().default("user"), // "admin" or "user"
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Asset table
@@ -82,6 +84,12 @@ export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
   walletAddress: true,
+  role: true,
+});
+
+export const loginUserSchema = z.object({
+  username: z.string().min(1),
+  password: z.string().min(1),
 });
 
 export const insertAssetSchema = createInsertSchema(assets).pick({

@@ -7,11 +7,101 @@ import {
   insertBorrowingMarketSchema,
   insertLiquidityPoolSchema,
   insertUserPositionSchema,
-  insertTransactionSchema
+  insertTransactionSchema,
+  insertUserSchema,
+  loginUserSchema
 } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Authentication API
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { username, password } = loginUserSchema.parse(req.body);
+      
+      const user = await storage.getUserByCredentials(username, password);
+      
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      res.json({ 
+        user: { 
+          id: user.id, 
+          username: user.username, 
+          role: user.role,
+          walletAddress: user.walletAddress 
+        } 
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Invalid login data", 
+          errors: error.errors 
+        });
+      }
+      
+      console.error("Login error:", error);
+      res.status(500).json({ message: "Failed to login" });
+    }
+  });
+
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const userData = insertUserSchema.parse({
+        ...req.body,
+        role: "user" // Default role for new users
+      });
+      
+      const existingUser = await storage.getUserByUsername(userData.username);
+      if (existingUser) {
+        return res.status(400).json({ message: "Username already exists" });
+      }
+      
+      const user = await storage.createUser(userData);
+      
+      res.status(201).json({ 
+        user: { 
+          id: user.id, 
+          username: user.username, 
+          role: user.role,
+          walletAddress: user.walletAddress 
+        } 
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Invalid registration data", 
+          errors: error.errors 
+        });
+      }
+      
+      console.error("Registration error:", error);
+      res.status(500).json({ message: "Failed to register user" });
+    }
+  });
+
+  // Admin routes
+  app.get("/api/admin/users", async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error) {
+      console.error("Get users error:", error);
+      res.status(500).json({ message: "Failed to get users" });
+    }
+  });
+
+  app.get("/api/admin/all-transactions", async (req, res) => {
+    try {
+      const transactions = await storage.getAllTransactions();
+      res.json(transactions);
+    } catch (error) {
+      console.error("Get all transactions error:", error);
+      res.status(500).json({ message: "Failed to get transactions" });
+    }
+  });
+
   // Assets API
   app.get("/api/assets", async (req, res) => {
     const assets = await storage.getAllAssets();

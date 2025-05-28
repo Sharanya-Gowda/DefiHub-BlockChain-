@@ -1,6 +1,8 @@
-import { Link, useLocation } from "wouter";
-import { Logo } from "@/components/ui/logo";
+import { useState } from "react";
+import { useLocation, Link } from "react-router-dom";
+import { useAuth } from "@/lib/authContext";
 import WalletConnectButton from "@/components/wallet-connect-button";
+import { Logo } from "@/components/ui/logo";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -96,7 +98,7 @@ export default function Header() {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            
+
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -114,9 +116,9 @@ export default function Header() {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            
+
             <WalletConnectButton />
-            
+
             <Button
               variant="ghost"
               size="icon"
@@ -150,7 +152,7 @@ export default function Header() {
                 {item.name}
               </Link>
             ))}
-            
+
             <button 
               className="w-full flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-blue-900 dark:hover:text-blue-300"
               onClick={() => {
@@ -161,7 +163,7 @@ export default function Header() {
               <Settings className="mr-3" size={18} />
               Settings
             </button>
-            
+
             <button 
               className="w-full flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-blue-900 dark:hover:text-blue-300"
               onClick={() => {
