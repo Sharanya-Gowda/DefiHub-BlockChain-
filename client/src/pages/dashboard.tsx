@@ -12,7 +12,8 @@ import LiquidityPools from "@/components/liquidity-pools";
 import TransactionsTable from "@/components/transactions-table";
 import { MarketOverview } from "@/components/price-ticker";
 import TransferForm from "@/components/transfer-form";
-import { TrendingUp, DollarSign, RefreshCw, Clock, ChevronRight, BarChart2, ShieldCheck } from "lucide-react";
+import SocialSharing from "@/components/social-sharing";
+import { TrendingUp, DollarSign, RefreshCw, Clock, ChevronRight, BarChart2, ShieldCheck, Share } from "lucide-react";
 
 export default function Dashboard() {
   const { isConnected } = useWallet();
