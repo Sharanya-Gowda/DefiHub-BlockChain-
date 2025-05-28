@@ -5,5 +5,6 @@ echo Installing dependencies...
 npm install
 echo.
 echo Starting development server...
-npm run dev
+set NODE_ENV=development
+tsx server/index.ts
 pause
