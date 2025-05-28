@@ -12,8 +12,19 @@ import { Eye, EyeOff, Shield, Users, CreditCard } from "lucide-react";
 export default function AuthPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { user, loginMutation, registerMutation } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (user) {
+      if (user.username === 'admin') {
+        setLocation('/admin');
+      } else {
+        setLocation('/dashboard');
+      }
+    }
+  }, [user, setLocation]);
 
   // Login form state
   const [loginData, setLoginData] = useState({
@@ -30,47 +41,7 @@ export default function AuthPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(loginData)
-      });
-
-      if (response.ok) {
-        const user = await response.json();
-        
-        toast({
-          title: "Login Successful",
-          description: `Welcome back, ${user.username}!`,
-        });
-
-        // Redirect based on user role
-        if (user.username === 'admin') {
-          setLocation('/admin');
-        } else {
-          setLocation('/dashboard');
-        }
-      } else {
-        toast({
-          title: "Login Failed",
-          description: "Invalid username or password",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to connect to server",
-        variant: "destructive",
-      });
-    }
-
-    setIsLoading(false);
+    loginMutation.mutate(loginData);
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -242,9 +213,9 @@ export default function AuthPage() {
                     <Button 
                       type="submit" 
                       className="w-full h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                      disabled={isLoading}
+                      disabled={loginMutation.isPending}
                     >
-                      {isLoading ? "Signing In..." : "Sign In"}
+                      {loginMutation.isPending ? "Signing In..." : "Sign In"}
                     </Button>
 
                     <div className="relative">
@@ -312,9 +283,9 @@ export default function AuthPage() {
                     <Button 
                       type="submit" 
                       className="w-full h-11 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
-                      disabled={isLoading}
+                      disabled={registerMutation.isPending}
                     >
-                      {isLoading ? "Creating Account..." : "Create Account"}
+                      {registerMutation.isPending ? "Creating Account..." : "Create Account"}
                     </Button>
                   </form>
                 </TabsContent>
