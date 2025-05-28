@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { useSettings, ThemeType, ColorScheme } from "@/lib/settingsContext";
+import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
-import { Moon, Sun, Laptop, User, Bell, ShieldCheck, Palette } from "lucide-react";
+import { Moon, Sun, Laptop, User, Bell, ShieldCheck, Palette, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function SettingsModal() {
@@ -21,11 +23,31 @@ export default function SettingsModal() {
     userProfile,
     updateProfile
   } = useSettings();
+  const { user, logoutMutation } = useAuth();
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("profile");
   const [displayName, setDisplayName] = useState(userProfile.displayName || "");
   const [email, setEmail] = useState(userProfile.email || "");
   const [notificationsEnabled, setNotificationsEnabled] = useState(userProfile.notificationsEnabled);
+
+  const handleLogout = async () => {
+    try {
+      await logoutMutation.mutateAsync();
+      closeSettings();
+      setLocation('/auth');
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out",
+      });
+    } catch (error) {
+      toast({
+        title: "Logout Failed",
+        description: "Failed to logout. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
   
   const handleSaveProfile = () => {
     updateProfile({
@@ -97,56 +119,46 @@ export default function SettingsModal() {
           </TabsList>
           
           <TabsContent value="profile" className="space-y-4">
-            <div className="flex items-center justify-center mb-4">
+            <div className="flex items-center justify-center mb-6">
               <div className="relative">
                 <Avatar className="h-20 w-20">
                   <AvatarImage src={userProfile.avatar || ""} />
                   <AvatarFallback className="bg-primary text-white text-lg">
-                    {displayName ? displayName.charAt(0).toUpperCase() : "U"}
+                    {user?.username ? user.username.charAt(0).toUpperCase() : "U"}
                   </AvatarFallback>
                 </Avatar>
-                <Button 
-                  size="sm" 
-                  className="absolute bottom-0 right-0 rounded-full w-8 h-8 p-0 flex items-center justify-center"
-                  onClick={() => {
-                    toast({
-                      title: "Upload Avatar",
-                      description: "Avatar upload would be implemented here",
-                    });
-                  }}
-                >
-                  +
-                </Button>
               </div>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="display-name">Display Name</Label>
-              <Input 
-                id="display-name" 
-                value={displayName} 
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="Enter your name"
-              />
+            <div className="text-center space-y-2 mb-6">
+              <h3 className="text-xl font-semibold">Welcome back!</h3>
+              <p className="text-muted-foreground">
+                Logged in as: <span className="font-medium text-foreground">{user?.username}</span>
+              </p>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <Input 
-                id="email" 
-                type="email"
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-              />
+            <div className="space-y-4">
+              <div className="p-4 border rounded-lg bg-muted/50">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-medium">Account Information</h4>
+                    <p className="text-sm text-muted-foreground">Username: {user?.username}</p>
+                    <p className="text-sm text-muted-foreground">Role: {user?.role || 'User'}</p>
+                  </div>
+                  <User className="h-8 w-8 text-muted-foreground" />
+                </div>
+              </div>
+              
+              <Button 
+                className="w-full" 
+                variant="destructive"
+                onClick={handleLogout}
+                disabled={logoutMutation.isPending}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                {logoutMutation.isPending ? "Logging out..." : "Logout"}
+              </Button>
             </div>
-            
-            <Button 
-              className="w-full" 
-              onClick={handleSaveProfile}
-            >
-              Save Profile
-            </Button>
           </TabsContent>
           
           <TabsContent value="appearance" className="space-y-4">

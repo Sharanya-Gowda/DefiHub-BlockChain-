@@ -10,6 +10,7 @@ import BorrowingMarket from "@/components/borrowing-market";
 import SwapForm from "@/components/swap-form";
 import LiquidityPools from "@/components/liquidity-pools";
 import TransactionsTable from "@/components/transactions-table";
+import { MarketOverview } from "@/components/price-ticker";
 import { TrendingUp, DollarSign, RefreshCw, Clock, ChevronRight, BarChart2, ShieldCheck } from "lucide-react";
 
 export default function Dashboard() {
