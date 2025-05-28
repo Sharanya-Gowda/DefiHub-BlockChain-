@@ -195,7 +195,14 @@ export class PriceOracleManager {
     try {
       const priceId = this.getPythPriceId(symbol);
       const response = await fetch(
-        `${ORACLE_PROVIDERS.PYTH.baseUrl}/price_feeds?ids[]=${priceId}`
+        `${ORACLE_PROVIDERS.PYTH.baseUrl}/price_feeds?ids[]=${priceId}`,
+        {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+          signal: AbortSignal.timeout(5000), // 5 second timeout
+        }
       );
       
       if (!response.ok) return null;
