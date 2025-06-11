@@ -1,4 +1,4 @@
-# DefiHub-BlockChain-
+# DefiHub BlockChain
 =======
 # DeFi Platform - Decentralized Finance Application
 
